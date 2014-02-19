@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>chortle</title>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.14.0.css">
+</head>
+<body onload="init();">
+  <div id="log"></div>
+  <form onsubmit="main(); return false;">
+  Input: <input id="input" style="width:200px;" />
+  Output: <input id="output" style="width:500px;" />
+  <input type="submit" />
+  </form>
+  <ul id="command-list"></ul>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script type="text/javascript" src="chortle.js"></script>
+  <script src="http://code.jquery.com/qunit/qunit-1.14.0.js"></script>
+  <script src="tests.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+TODO
+====
+- create pattern rules that match parts of speech
+- look for pattern match (e.g. PRP + VBP + NN)
+- respond with pattern response
