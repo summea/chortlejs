@@ -41,8 +41,31 @@ function ask(question) {
   return question;
 }
 
-function getPOS(key)
-{
+function botResponseLogic() {
+  var botResponse = "";
+  // check POS pattern result
+  // PRP,VBP,NN (i eat salt)
+  // PRP,VBZ,NN (he eats salt)
+  if (result == "PRP,VBP,NN" || result == "PRP,VBZ,NN") {
+    if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
+      botResponse += "you";
+    } else {
+      botResponse += userResponses[userResponses.length-1][0].split("/")[1];
+    }
+    botResponse += " " + userResponses[userResponses.length-1][1].split("/")[1] + " " + userResponses[userResponses.length-1][2].split("/")[1] + "?";
+  } else if (result == "UH") {
+    botResponse += "I see... ";
+    if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
+      botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
+    }
+  } else {
+    botResponse += "oh, why?";
+  }
+
+  return botResponse;
+}
+
+function getPOS(key) {
   var result = "";
   if (dictionary[key])
     result = dictionary[key];
@@ -90,24 +113,7 @@ function main() {
   console.log(userResponses[0][0].split("/")[1]);
 
   // bot response logic
-  var botResponse = "";
-  // check POS pattern result
-  if (result == "PRP,VBP,NN" || result == "PRP,VBZ,NN") {
-    if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
-      botResponse += "you";
-    } else {
-      botResponse += userResponses[userResponses.length-1][0].split("/")[1];
-    }
-    botResponse += " " + userResponses[userResponses.length-1][1].split("/")[1] + " " + userResponses[userResponses.length-1][2].split("/")[1] + "?";
-  } else if (result == "UH") {
-    botResponse += "I see... ";
-    if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
-      botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
-    }
-  } else {
-    botResponse += "oh, why?";
-  }
-  output(botResponse);
+  output(botResponseLogic());
 
   // add to running log
   document.getElementById("log").innerHTML +=
