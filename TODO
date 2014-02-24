@@ -1,5 +1,11 @@
 TODO
 ====
+Small
+-----
+- find a way to make the bot response logic less fragile (those hard coded array indexes...) 
+
+Big
+---
 - create pattern rules that match parts of speech
 - look for pattern match (e.g. PRP + VBP + NN)
 - respond with pattern response

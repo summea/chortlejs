@@ -16,6 +16,7 @@ var dictionary = {
   "her": "PRP",
   "us": "PRP",
   "them": "PRP",
+  "because": "IN",
   "eat": "VBP",
   "eats": "VBZ",
   "salt": "NN",
@@ -46,17 +47,21 @@ function botResponseLogic() {
   // check POS pattern result
   // PRP,VBP,NN (i eat salt)
   // PRP,VBZ,NN (he eats salt)
-  if (result == "PRP,VBP,NN" || result == "PRP,VBZ,NN") {
+  if (result == "PRP,VBP,NN" || result == "PRP,VBZ,NN" || result == "PRP,VBP,UNKNOWN") {
     if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
       botResponse += "you";
     } else {
       botResponse += userResponses[userResponses.length-1][0].split("/")[1];
     }
     botResponse += " " + userResponses[userResponses.length-1][1].split("/")[1] + " " + userResponses[userResponses.length-1][2].split("/")[1] + "?";
-  } else if (result == "UH") {
+
+  // UH (yes)
+  // IN (because)
+  } else if (result == "UH" || result == "IN") {
     botResponse += "I see... ";
     if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
-      botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
+      if (userResponses[userResponses.length-2][2])
+        botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
     }
   } else {
     botResponse += "oh, why?";
@@ -69,6 +74,8 @@ function getPOS(key) {
   var result = "";
   if (dictionary[key])
     result = dictionary[key];
+  else
+    result = "UNKNOWN";
   return result;
 }
 
