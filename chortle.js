@@ -42,12 +42,13 @@ function ask(question) {
   return question;
 }
 
-function botResponseLogic() {
+function botResponseLogic(input) {
   var botResponse = "";
-  // check POS pattern result
+  // check POS pattern input
+
   // PRP,VBP,NN (i eat salt)
   // PRP,VBZ,NN (he eats salt)
-  if (result == "PRP,VBP,NN" || result == "PRP,VBZ,NN" || result == "PRP,VBP,UNKNOWN") {
+  if (input == "PRP,VBP,NN" || input == "PRP,VBZ,NN" || input == "PRP,VBP,UNKNOWN") {
     if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
       botResponse += "you";
     } else {
@@ -57,7 +58,7 @@ function botResponseLogic() {
 
   // UH (yes)
   // IN (because)
-  } else if (result == "UH" || result == "IN") {
+  } else if (input == "UH" || input == "IN") {
     botResponse += "I see... ";
     if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
       if (userResponses[userResponses.length-2][2])
@@ -120,7 +121,7 @@ function main() {
   console.log(userResponses[0][0].split("/")[1]);
 
   // bot response logic
-  output(botResponseLogic());
+  output(botResponseLogic(result));
 
   // add to running log
   document.getElementById("log").innerHTML +=
