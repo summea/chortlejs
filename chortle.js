@@ -27,10 +27,7 @@ var userResponses = new Array();
 
 function init() {
   var commands = new Array();
-  commands.push("x is y");
-  commands.push("what is x?");
-  commands.push("is x y?");
-  commands.push("x is y and z");
+  commands.push("PRP VBP|VBZ NN ... i eat cake");
   for (i = 0; i < commands.length; i++) {
     document.getElementById('command-list').innerHTML +=
       "<li>" + commands[i] + "</li>";
@@ -46,19 +43,20 @@ function botResponseLogic(input) {
   var botResponse = "";
   // check POS pattern input
 
-  // PRP,VBP,NN (i eat salt)
-  // PRP,VBZ,NN (he eats salt)
-  if (input == "PRP,VBP,NN" || input == "PRP,VBZ,NN" || input == "PRP,VBP,UNKNOWN") {
+  // ADDME: relative reg exp (capture these patterns within extra (unnecessary for now) words
+  if (input == "PRP,VBP,NN" || input == "PRP,VBZ,NN" || input == "PRP,VBP,UNKNOWN" || input == "PRP,VBZ,UNKNOWN") {
+    // PRP,VBP,NN (i eat salt)
+    // PRP,VBZ,NN (he eats salt)
     if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
       botResponse += "you";
     } else {
+      // ADDME: who are we talking about?
       botResponse += userResponses[userResponses.length-1][0].split("/")[1];
     }
     botResponse += " " + userResponses[userResponses.length-1][1].split("/")[1] + " " + userResponses[userResponses.length-1][2].split("/")[1] + "?";
-
-  // UH (yes)
-  // IN (because)
   } else if (input == "UH" || input == "IN") {
+    // UH (yes)
+    // IN (because)
     botResponse += "I see... ";
     if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
       if (userResponses[userResponses.length-2][2])
@@ -112,7 +110,6 @@ function tokenize(input) {
 function main() {
   input = document.getElementById("input").value;
   result = parse(input);
-  //output(result);
 
   console.log("result");
   console.log(result);
@@ -121,11 +118,15 @@ function main() {
   console.log(userResponses[0][0].split("/")[1]);
 
   // bot response logic
-  output(botResponseLogic(result));
+  var botResponse = botResponseLogic(result);
+  output(botResponse);
 
   // add to running log
   document.getElementById("log").innerHTML +=
     "> " + input + " -- " + result + "<br>";
+  document.getElementById("log").innerHTML +=
+    "> " + botResponse + "<br>";
+  
   document.getElementById("input").value = "";    // clear input textbox
   console.log(learned);   // display what we've learned
 }
