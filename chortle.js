@@ -27,7 +27,7 @@ var userResponses = new Array();
 
 function init() {
   var commands = new Array();
-  commands.push("PRP VBP|VBZ NN ... i eat cake");
+  commands.push("PRP VBP|VBZ NN|UNKNOWN ... i eat cake");
   for (i = 0; i < commands.length; i++) {
     document.getElementById('command-list').innerHTML +=
       "<li>" + commands[i] + "</li>";
@@ -43,6 +43,7 @@ function botResponseLogic(input) {
   var botResponse = "";
   // check POS pattern input
 
+  // FIXME: according to assignment, bot needs to ask first question...
   // ADDME: relative reg exp (capture these patterns within extra (unnecessary for now) words
   if (input == "PRP,VBP,NN" || input == "PRP,VBZ,NN" || input == "PRP,VBP,UNKNOWN" || input == "PRP,VBZ,UNKNOWN") {
     // PRP,VBP,NN (i eat salt)
