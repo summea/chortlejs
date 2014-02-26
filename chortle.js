@@ -63,9 +63,8 @@ function botResponseLogic(input) {
   
   // TODO: find a way to use regexps to check inside pattern for matches (and, perhaps, crunch found pattern matches together)
   
-  if (input == "PRP,NN" || input == "PRP,UNKNOWN") {
+  if (input.match(/PRP,NN|PRP,UNKNOWN/i)) {
     console.log("checking noun phrase");
-    
   }
   
   // ADDME: relative reg exp (capture these patterns within extra (unnecessary for now) words
