@@ -1,9 +1,11 @@
 // chortle.js
 // a quest for chortle
 
+// ADDME: common verbs
 var dictionary = {
   "yes": "UH",
   "no": "DT",
+
   "i": "PRP",
   "you": "PRP",
   "he": "PRP",
@@ -16,9 +18,15 @@ var dictionary = {
   "her": "PRP",
   "us": "PRP",
   "them": "PRP",
-  "because": "IN",
+  "my": "PRP",
+  "your": "PRP",
+ 
+ "because": "IN",
+  
   "eat": "VBP",
   "eats": "VBZ",
+  "is": "VBZ",
+
   "salt": "NN",
 }
 
@@ -32,6 +40,11 @@ function init() {
     document.getElementById('command-list').innerHTML +=
       "<li>" + commands[i] + "</li>";
   }
+  
+  // first bot question
+  var question = "hello, what is your name?";
+  output(question);
+  logger(question);
 }
 
 function ask(question) {
@@ -42,8 +55,19 @@ function ask(question) {
 function botResponseLogic(input) {
   var botResponse = "";
   // check POS pattern input
-
-  // FIXME: according to assignment, bot needs to ask first question...
+  
+  /*
+      my  name        is  al
+      PRP NN|UNKNOWN  VBZ NN|UNKNOWN
+  */
+  
+  // TODO: find a way to use regexps to check inside pattern for matches (and, perhaps, crunch found pattern matches together)
+  
+  if (input == "PRP,NN" || input == "PRP,UNKNOWN") {
+    console.log("checking noun phrase");
+    
+  }
+  
   // ADDME: relative reg exp (capture these patterns within extra (unnecessary for now) words
   if (input == "PRP,VBP,NN" || input == "PRP,VBZ,NN" || input == "PRP,VBP,UNKNOWN" || input == "PRP,VBZ,UNKNOWN") {
     // PRP,VBP,NN (i eat salt)
@@ -79,6 +103,11 @@ function getPOS(key) {
   return result;
 }
 
+function logger(output) {
+  document.getElementById("log").innerHTML +=
+    "> " + output + "<br>";
+}
+
 function output(output) {
   document.getElementById("output").value = output;
 }
@@ -103,6 +132,7 @@ function parse(phrase) {
 
 function tokenize(input) {
   input = input.replace(/([\.?\/])/g, " $1");
+  input = input.toLowerCase();
   var items = input.split(" ");
   console.log("tokens: " + items);
   return items;
@@ -123,10 +153,9 @@ function main() {
   output(botResponse);
 
   // add to running log
-  document.getElementById("log").innerHTML +=
-    "> " + input + " -- " + result + "<br>";
-  document.getElementById("log").innerHTML +=
-    "> " + botResponse + "<br>";
+  
+  logger(input);
+  logger(botResponse);
   
   document.getElementById("input").value = "";    // clear input textbox
   console.log(learned);   // display what we've learned

@@ -2,6 +2,7 @@ TODO
 ====
 Small
 -----
++ according to assignment, bot needs to ask first question...
 - find a way to make the bot response logic less fragile (those hard coded array indexes...) 
 
 Big
