@@ -86,31 +86,6 @@ function botResponseLogic(input) {
     item[generatedKeyList.join(" ")] = userResponses[userResponses.length-1][userResponses[userResponses.length-1].length-1].split("/")[1];
     learn(item);
   }
-
-  if (input.match(/PRP,NN,VBZ|PRP,UNKNOWN,VBZ/i)) {
-    if (userResponses[userResponses.length-1][2].split("/")[1] == "is") {
-      var zero = userResponses[userResponses.length-1][0].split("/")[1];
-
-      // convert to bot's perspective
-      if (zero == "my") zero = "your";
-
-      var one = userResponses[userResponses.length-1][1].split("/")[1];
-/*
-      var one = "";
-
-      for (var i = 2; i < userResponses[userResponses.length-1].length; i++) {
-        if (userResponses[userResponses.length-1][i] && (userResponses[userResponses.length-1][i].split("/")[0] == "NN" || userResponses[userResponses.length-1][i].split("/")[0] == "UNKNOWN")) {
-          one += userResponses[userResponses.length-1][i].split("/")[1];
-        }
-      }
-*/
-      var comboKey = zero + " " + one;
-      var item = new Object();
-
-      //item[comboKey] = userResponses[userResponses.length-1][3].split("/")[1];
-      learn(item);
-    }
-  }
   
   if (input.match(/PRP,VBP,NN|PRP,VBZ,NN|PRP,VBP,UNKNOWN|PRP,VBZ,UNKNOWN/i)) {
     // PRP,VBP,NN (ex: i eat salt)
