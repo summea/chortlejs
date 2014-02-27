@@ -36,6 +36,8 @@ var questions = [
   "what is your favorite food?",
 ]
 
+var askedQuestions = Array();
+
 var learned = {}
 var userResponses = new Array();
 
@@ -50,11 +52,14 @@ function init() {
   // first bot question
   var question = "hello, " + questions[0];
   output(question);
+  askedQuestions.push(questions[0]);
   logger(question);
+  console.log(askedQuestions);
 }
 
 function ask(question) {
   output(question);
+  askedQuestions.push(question);
   return question;
 }
 
@@ -67,26 +72,49 @@ function botResponseLogic(input) {
       PRP NN|UNKNOWN  VBZ NN|UNKNOWN
   */
   
-  if (input.match(/PRP,NN|PRP,UNKNOWN/i)) {
-    // PRP,NN|PRP,UNKNOWN (ex: my name)
-    console.log("checking noun phrase");
-  }
-
   if (input.match(/PRP(.*)VBZ/i)) {
     // PRP(.*)VBZ (ex: my ** ** is **)
-    console.log(input.match(/(PRP.*),VBZ/i)[1]);
     var generatedKeyList = Array();
-    // need to use the actual found pattern match here...
-    for (var i = 0; i < userResponses[userResponses.length-1].length-1; i++) {
-      generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+    var generatedValueList = Array();
+    var pastVerb = false;
+    
+    // divide up how we learn this data (key:value)
+    for (var i = 0; i < userResponses[userResponses.length-1].length; i++) {
+      if (pastVerb) {
+        // if after verb (goes into value)
+        generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+      } else {
+        // if before or equal to verb (goes into key)
+        generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+      }
+
+      if (userResponses[userResponses.length-1][i].split("/")[0].match(/VBZ/i)) {
+        pastVerb = true;
+      }
     }
+    console.log("generated key/value lists joined individually");
     console.log(generatedKeyList.join(" "));
+    console.log(generatedValueList.join(" "));
 
     var item = new Object();
-    item[generatedKeyList.join(" ")] = userResponses[userResponses.length-1][userResponses[userResponses.length-1].length-1].split("/")[1];
+    //item[generatedKeyList.join(" ")] = userResponses[userResponses.length-1][userResponses[userResponses.length-1].length-1].split("/")[1];
+    item[generatedKeyList.join(" ")] = generatedValueList.join(" ");
+    learn(item);
+
+  } else if (input.match(/NN|UNKNOWN/i)) {
+    // one word answer ... add question data to learned information
+    var generatedValueList = Array();
+    
+    // collect values for learned data
+    for (var i = 0; i < userResponses[userResponses.length-1].length; i++) {
+      generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+    }
+
+    var item = new Object();
+    item[askedQuestions[askedQuestions.length-1]] = generatedValueList.join(" ");
     learn(item);
   }
-  
+ 
   if (input.match(/PRP,VBP,NN|PRP,VBZ,NN|PRP,VBP,UNKNOWN|PRP,VBZ,UNKNOWN/i)) {
     // PRP,VBP,NN (ex: i eat salt)
     // PRP,VBZ,NN (ex: he eats salt)
@@ -182,7 +210,9 @@ function main() {
   
   logger(input);
   logger(botResponse);
+  console.log(askedQuestions);
   
   document.getElementById("input").value = "";    // clear input textbox
+  console.log("learned:");
   console.log(learned);   // display what we've learned
 }
