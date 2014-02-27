@@ -66,17 +66,16 @@ function botResponseLogic(input) {
       PRP NN|UNKNOWN  VBZ NN|UNKNOWN
   */
   
-  // TODO: find a way to use regexps to check inside pattern for matches (and, perhaps, crunch found pattern matches together)
-  
   if (input.match(/PRP,NN|PRP,UNKNOWN/i)) {
     // PRP,NN|PRP,UNKNOWN (ex: my name)
     console.log("checking noun phrase");
   }
 
   if (input.match(/PRP(.*)VBZ/i)) {
-    // join middles for now...
+    // PRP(.*)VBZ (ex: my ** ** is **)
     console.log(input.match(/(PRP.*),VBZ/i)[1]);
     var generatedKeyList = Array();
+    // need to use the actual found pattern match here...
     for (var i = 0; i < userResponses[userResponses.length-1].length-1; i++) {
       generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
     }
