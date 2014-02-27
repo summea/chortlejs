@@ -3,6 +3,7 @@ TODO
 Small
 -----
 - find a way to make the bot response logic less fragile (those hard coded array indexes...) 
++ PRP, * (anything not a verb) VBZ ... my * is
 + switch hard-coded input pattern rules to regexps 
 + according to assignment, bot needs to ask first question...
 

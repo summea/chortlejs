@@ -73,8 +73,6 @@ function botResponseLogic(input) {
     console.log("checking noun phrase");
   }
 
-  // TODO: PRP, * (anything not a verb) VBZ ... my * is
-
   if (input.match(/PRP(.*)VBZ/i)) {
     // join middles for now...
     console.log(input.match(/(PRP.*),VBZ/i)[1]);
