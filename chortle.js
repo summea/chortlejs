@@ -26,6 +26,7 @@ var dictionary = {
   "eat": "VBP",
   "eats": "VBZ",
   "is": "VBZ",
+  "like": "VBP",
 
   "salt": "NN",
 }
