@@ -75,8 +75,18 @@ function botResponseLogic(input) {
 
   // TODO: PRP, * (anything not a verb) VBZ ... my * is
 
-  if (input.match(/PRP,VBZ,VBZ/i)) {
+  if (input.match(/PRP(.*)VBZ/i)) {
+    // join middles for now...
+    console.log(input.match(/(PRP.*),VBZ/i)[1]);
+    var generatedKeyList = Array();
+    for (var i = 0; i < userResponses[userResponses.length-1].length-1; i++) {
+      generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+    }
+    console.log(generatedKeyList.join(" "));
 
+    var item = new Object();
+    item[generatedKeyList.join(" ")] = userResponses[userResponses.length-1][userResponses[userResponses.length-1].length-1].split("/")[1];
+    learn(item);
   }
 
   if (input.match(/PRP,NN,VBZ|PRP,UNKNOWN,VBZ/i)) {
@@ -99,7 +109,7 @@ function botResponseLogic(input) {
       var comboKey = zero + " " + one;
       var item = new Object();
 
-      item[comboKey] = userResponses[userResponses.length-1][3].split("/")[1];
+      //item[comboKey] = userResponses[userResponses.length-1][3].split("/")[1];
       learn(item);
     }
   }
