@@ -21,7 +21,7 @@ var dictionary = {
   "my": "PRP",
   "your": "PRP",
  
- "because": "IN",
+  "because": "IN",
   
   "eat": "VBP",
   "eats": "VBZ",
@@ -29,6 +29,11 @@ var dictionary = {
 
   "salt": "NN",
 }
+
+var questions = [
+  "what is your name?",
+  "what is your favorite food?",
+]
 
 var learned = {}
 var userResponses = new Array();
@@ -42,7 +47,7 @@ function init() {
   }
   
   // first bot question
-  var question = "hello, what is your name?";
+  var question = "hello, " + questions[0];
   output(question);
   logger(question);
 }
@@ -64,13 +69,44 @@ function botResponseLogic(input) {
   // TODO: find a way to use regexps to check inside pattern for matches (and, perhaps, crunch found pattern matches together)
   
   if (input.match(/PRP,NN|PRP,UNKNOWN/i)) {
+    // PRP,NN|PRP,UNKNOWN (ex: my name)
     console.log("checking noun phrase");
   }
+
+  // TODO: PRP, * (anything not a verb) VBZ ... my * is
+
+  if (input.match(/PRP,VBZ,VBZ/i)) {
+
+  }
+
+  if (input.match(/PRP,NN,VBZ|PRP,UNKNOWN,VBZ/i)) {
+    if (userResponses[userResponses.length-1][2].split("/")[1] == "is") {
+      var zero = userResponses[userResponses.length-1][0].split("/")[1];
+
+      // convert to bot's perspective
+      if (zero == "my") zero = "your";
+
+      var one = userResponses[userResponses.length-1][1].split("/")[1];
+/*
+      var one = "";
+
+      for (var i = 2; i < userResponses[userResponses.length-1].length; i++) {
+        if (userResponses[userResponses.length-1][i] && (userResponses[userResponses.length-1][i].split("/")[0] == "NN" || userResponses[userResponses.length-1][i].split("/")[0] == "UNKNOWN")) {
+          one += userResponses[userResponses.length-1][i].split("/")[1];
+        }
+      }
+*/
+      var comboKey = zero + " " + one;
+      var item = new Object();
+
+      item[comboKey] = userResponses[userResponses.length-1][3].split("/")[1];
+      learn(item);
+    }
+  }
   
-  // ADDME: relative reg exp (capture these patterns within extra (unnecessary for now) words
-  if (input == "PRP,VBP,NN" || input == "PRP,VBZ,NN" || input == "PRP,VBP,UNKNOWN" || input == "PRP,VBZ,UNKNOWN") {
-    // PRP,VBP,NN (i eat salt)
-    // PRP,VBZ,NN (he eats salt)
+  if (input.match(/PRP,VBP,NN|PRP,VBZ,NN|PRP,VBP,UNKNOWN|PRP,VBZ,UNKNOWN/i)) {
+    // PRP,VBP,NN (ex: i eat salt)
+    // PRP,VBZ,NN (ex: he eats salt)
     if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
       botResponse += "you";
     } else {
@@ -87,7 +123,9 @@ function botResponseLogic(input) {
         botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
     }
   } else {
-    botResponse += "oh, why?";
+    // FIXME: ask question behaviors
+    //botResponse += "oh, why?";
+    botResponse += questions[1];
   }
 
   return botResponse;
@@ -100,6 +138,12 @@ function getPOS(key) {
   else
     result = "UNKNOWN";
   return result;
+}
+
+function learn(info) {
+  for (var item in info) {
+    learned[item] = info[item];
+  }
 }
 
 function logger(output) {
