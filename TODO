@@ -4,11 +4,13 @@ TODO
 - askBehavior: once an answer is given to a question, go to another question
 - askBehavior: once an answer is given to a question, ask a detail about answer
 - find a way to make the bot response logic less fragile (those hard coded array indexes...)
-- questions have a piece of info we want (a target) ex: what is your name? (_name_ is target)
 - keep track of what question number we are on
 - check expected pattern from user
+- ask question again if expected pattern not found
+- deal with target
 
-
++ deal with whitespace answers
++ questions have a piece of info we want (a target) ex: what is your name? (_name_ is target)
 + add expected response pattern functionality (in questions array)
 + when bot is given a one word response, use question as key, and collect multiple NN|UNKNOWN
 + collect multiple values after PRP,.*,VBZ

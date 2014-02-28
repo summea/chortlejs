@@ -70,85 +70,97 @@ function botResponseLogic(input) {
   console.log(input);
   console.log(questions[1]["expected"]);
 
-  /*
-      my  name        is  al
-      PRP NN|UNKNOWN  VBZ NN|UNKNOWN
-  */
-  
-  if (input.match(/PRP(.*)VBZ/i)) {
-    // PRP(.*)VBZ (ex: my ** ** is **)
-    var generatedKeyList = Array();
-    var generatedValueList = Array();
-    var generatedValuePatternList = Array();
-    var pastVerb = false;
+  // make sure there is input (no whitespace)
+  if (userResponses[userResponses.length-1][0].split("/")[1].replace(/\s/g, "").length > 0) {
+
+    /*
+        my  name        is  al
+        PRP NN|UNKNOWN  VBZ NN|UNKNOWN
+    */
     
-    // divide up how we learn this data (key:value)
-    for (var i = 0; i < userResponses[userResponses.length-1].length; i++) {
-      if (pastVerb) {
-        // if after verb (goes into value)
-        generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
-        generatedValuePatternList.push(userResponses[userResponses.length-1][i].split("/")[0]);
+    if (input.match(/PRP(.*)VBZ/i)) {
+      // PRP(.*)VBZ (ex: my ** ** is **)
+      var generatedKeyList = Array();
+      var generatedValueList = Array();
+      var generatedValuePatternList = Array();
+      var pastVerb = false;
+      
+      // divide up how we learn this data (key:value)
+      for (var i = 0; i < userResponses[userResponses.length-1].length; i++) {
+        if (pastVerb) {
+          // if after verb (goes into value)
+          generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+          generatedValuePatternList.push(userResponses[userResponses.length-1][i].split("/")[0]);
+        } else {
+          // if before or equal to verb (goes into key)
+          generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+        }
+
+        if (userResponses[userResponses.length-1][i].split("/")[0].match(/VBZ/i)) {
+          pastVerb = true;
+        }
+      }
+      console.log("generated key/value lists joined individually");
+      console.log(generatedKeyList.join(" "));
+      console.log(generatedValueList.join(" "));
+      console.log(generatedValuePatternList.join(","));
+
+      var valueMatchedPattern = generatedValuePatternList.join(",");
+      if (questions[1]["expected"].match(valueMatchedPattern) && valueMatchedPattern.replace(/\s/g, "").length > 0) {
+        console.log("response as expected...");
+        var item = new Object();
+        item[generatedKeyList.join(" ")] = generatedValueList.join(" ");
+        learn(item);
       } else {
-        // if before or equal to verb (goes into key)
-        generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+        console.log("unexpected response!");
+        botResponse += "what do you mean? ";
+        // TODO: repeat question
+        // TODO: know what question number we are on...
       }
 
-      if (userResponses[userResponses.length-1][i].split("/")[0].match(/VBZ/i)) {
-        pastVerb = true;
+    } else if (input.match(/NN|UNKNOWN/i)) {
+      // one word answer ... add question data to learned information
+      var generatedValueList = Array();
+      
+      // collect values for learned data
+      for (var i = 0; i < userResponses[userResponses.length-1].length; i++) {
+        generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
       }
-    }
-    console.log("generated key/value lists joined individually");
-    console.log(generatedKeyList.join(" "));
-    console.log(generatedValueList.join(" "));
-    console.log(generatedValuePatternList.join(" "));
 
-    var valueMatchedPattern = generatedValuePatternList.join(" ");
-    // TODO: check for whitespace...
-    if (questions[1]["expected"].match(valueMatchedPattern) && valueMatchedPattern > "") {
-      console.log("response as expected...");
       var item = new Object();
-      item[generatedKeyList.join(" ")] = generatedValueList.join(" ");
+      item[askedQuestions[askedQuestions.length-1]] = generatedValueList.join(" ");
       learn(item);
+    }
+   
+    if (input.match(/PRP,VBP,NN|PRP,VBZ,NN|PRP,VBP,UNKNOWN|PRP,VBZ,UNKNOWN/i)) {
+      // PRP,VBP,NN (ex: i eat salt)
+      // PRP,VBZ,NN (ex: he eats salt)
+      if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
+        botResponse += "you";
+      } else {
+        // ADDME: who are we talking about?
+        botResponse += userResponses[userResponses.length-1][0].split("/")[1];
+      }
+      botResponse += " " + userResponses[userResponses.length-1][1].split("/")[1] + " " + userResponses[userResponses.length-1][2].split("/")[1] + "?";
+    } else if (input == "UH" || input == "IN") {
+      // UH (yes)
+      // IN (because)
+      botResponse += "I see... ";
+      if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
+        if (userResponses[userResponses.length-2][2])
+          botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
+      }
     } else {
-      botResponse += "what do you mean? ";
-    }
-
-  } else if (input.match(/NN|UNKNOWN/i)) {
-    // one word answer ... add question data to learned information
-    var generatedValueList = Array();
-    
-    // collect values for learned data
-    for (var i = 0; i < userResponses[userResponses.length-1].length; i++) {
-      generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
-    }
-
-    var item = new Object();
-    item[askedQuestions[askedQuestions.length-1]] = generatedValueList.join(" ");
-    learn(item);
-  }
- 
-  if (input.match(/PRP,VBP,NN|PRP,VBZ,NN|PRP,VBP,UNKNOWN|PRP,VBZ,UNKNOWN/i)) {
-    // PRP,VBP,NN (ex: i eat salt)
-    // PRP,VBZ,NN (ex: he eats salt)
-    if (userResponses[userResponses.length-1][0].split("/")[1] == "i") {
-      botResponse += "you";
-    } else {
-      // ADDME: who are we talking about?
-      botResponse += userResponses[userResponses.length-1][0].split("/")[1];
-    }
-    botResponse += " " + userResponses[userResponses.length-1][1].split("/")[1] + " " + userResponses[userResponses.length-1][2].split("/")[1] + "?";
-  } else if (input == "UH" || input == "IN") {
-    // UH (yes)
-    // IN (because)
-    botResponse += "I see... ";
-    if (userResponses[userResponses.length-2][0].split("/")[1] != "yes") {
-      if (userResponses[userResponses.length-2][2])
-        botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
+      // FIXME: add question askBehaviors
+      //botResponse += "oh, why?";
+      botResponse += questions[1]["question"];
+      if (askedQuestions[questions[1]["question"]]) {
+        // go on to another behavior
+        
+      }
     }
   } else {
-    // FIXME: add question askBehaviors
-    //botResponse += "oh, why?";
-    botResponse += questions[1]["question"];
+    botResponse += "no answer, eh...?";
   }
 
   return botResponse;
