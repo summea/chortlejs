@@ -1,23 +1,19 @@
 TODO
 ====
-Small
------
-- find a way to use regexps to check inside pattern for matches (and, perhaps, crunch found pattern matches together)
+- crunch found pattern matches together?
 - askBehavior: once an answer is given to a question, go to another question
 - askBehavior: once an answer is given to a question, ask a detail about answer
 - find a way to make the bot response logic less fragile (those hard coded array indexes...)
+- questions have a piece of info we want (a target) ex: what is your name? (_name_ is target)
+- keep track of what question number we are on
+- check expected pattern from user
 
 
++ add expected response pattern functionality (in questions array)
 + when bot is given a one word response, use question as key, and collect multiple NN|UNKNOWN
 + collect multiple values after PRP,.*,VBZ
 + when bot is given a one word response, use question as key
-
 + PRP, * (anything not a verb) VBZ ... my * is
 + switch hard-coded input pattern rules to regexps 
 + according to assignment, bot needs to ask first question...
-
-Big
----
-- create pattern rules that match parts of speech
-- look for pattern match (e.g. PRP + VBP + NN)
-- respond with pattern response
++ look for pattern match (e.g. PRP + VBP + NN)

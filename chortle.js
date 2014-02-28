@@ -31,9 +31,10 @@ var dictionary = {
   "salt": "NN",
 }
 
+// question: expected pattern response from user
 var questions = [
-  "what is your name?",
-  "what is your favorite food?",
+  {"question": "what is your _name_?", "expected": "UNKNOWN,UNKNOWN|UNKNOWN"},
+  {"question": "what is your _favorite food_?", "expected": "UNKNOWN,UNKNOWN|UNKNOWN"},
 ]
 
 var askedQuestions = Array();
@@ -43,22 +44,21 @@ var userResponses = new Array();
 
 function init() {
   var commands = new Array();
-  commands.push("PRP VBP|VBZ NN|UNKNOWN ... i eat cake");
+  // commands.push("PRP VBP|VBZ NN|UNKNOWN ... i eat cake");
   for (i = 0; i < commands.length; i++) {
     document.getElementById('command-list').innerHTML +=
       "<li>" + commands[i] + "</li>";
   }
   
   // first bot question
-  var question = "hello, " + questions[0];
-  output(question);
-  askedQuestions.push(questions[0]);
-  logger(question);
+  var question = "hello, " + questions[0]["question"];
+  ask(question);
+  logger(question.replace(/_/g, ""));
   console.log(askedQuestions);
 }
 
 function ask(question) {
-  output(question);
+  output(question.replace(/_/g, ""));
   askedQuestions.push(question);
   return question;
 }
@@ -67,6 +67,9 @@ function botResponseLogic(input) {
   var botResponse = "";
   // check POS pattern input
   
+  console.log(input);
+  console.log(questions[1]["expected"]);
+
   /*
       my  name        is  al
       PRP NN|UNKNOWN  VBZ NN|UNKNOWN
@@ -76,6 +79,7 @@ function botResponseLogic(input) {
     // PRP(.*)VBZ (ex: my ** ** is **)
     var generatedKeyList = Array();
     var generatedValueList = Array();
+    var generatedValuePatternList = Array();
     var pastVerb = false;
     
     // divide up how we learn this data (key:value)
@@ -83,6 +87,7 @@ function botResponseLogic(input) {
       if (pastVerb) {
         // if after verb (goes into value)
         generatedValueList.push(userResponses[userResponses.length-1][i].split("/")[1]);
+        generatedValuePatternList.push(userResponses[userResponses.length-1][i].split("/")[0]);
       } else {
         // if before or equal to verb (goes into key)
         generatedKeyList.push(userResponses[userResponses.length-1][i].split("/")[1]);
@@ -95,11 +100,18 @@ function botResponseLogic(input) {
     console.log("generated key/value lists joined individually");
     console.log(generatedKeyList.join(" "));
     console.log(generatedValueList.join(" "));
+    console.log(generatedValuePatternList.join(" "));
 
-    var item = new Object();
-    //item[generatedKeyList.join(" ")] = userResponses[userResponses.length-1][userResponses[userResponses.length-1].length-1].split("/")[1];
-    item[generatedKeyList.join(" ")] = generatedValueList.join(" ");
-    learn(item);
+    var valueMatchedPattern = generatedValuePatternList.join(" ");
+    // TODO: check for whitespace...
+    if (questions[1]["expected"].match(valueMatchedPattern) && valueMatchedPattern > "") {
+      console.log("response as expected...");
+      var item = new Object();
+      item[generatedKeyList.join(" ")] = generatedValueList.join(" ");
+      learn(item);
+    } else {
+      botResponse += "what do you mean? ";
+    }
 
   } else if (input.match(/NN|UNKNOWN/i)) {
     // one word answer ... add question data to learned information
@@ -134,9 +146,9 @@ function botResponseLogic(input) {
         botResponse += "do you like " + userResponses[userResponses.length-2][2].split("/")[1] + "?"; 
     }
   } else {
-    // FIXME: ask question behaviors
+    // FIXME: add question askBehaviors
     //botResponse += "oh, why?";
-    botResponse += questions[1];
+    botResponse += questions[1]["question"];
   }
 
   return botResponse;
@@ -204,12 +216,12 @@ function main() {
 
   // bot response logic
   var botResponse = botResponseLogic(result);
-  output(botResponse);
+  output(botResponse.replace(/_/g, ""));
 
   // add to running log
   
   logger(input);
-  logger(botResponse);
+  logger(botResponse.replace(/_/g, ""));
   console.log(askedQuestions);
   
   document.getElementById("input").value = "";    // clear input textbox
