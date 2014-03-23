@@ -31,6 +31,8 @@ var dictionary = {
   "salt": "NN",
 }
 
+var botLearnedPatterns = Array();
+
 // question: expected pattern response from user
 var questions = [
   {"question": "what is your _name_?", "expected": "UNKNOWN,UNKNOWN|UNKNOWN"},
@@ -73,10 +75,8 @@ function botResponseLogic(input) {
   // make sure there is input (no whitespace)
   if (userResponses[userResponses.length-1][0].split("/")[1].replace(/\s/g, "").length > 0) {
 
-    /*
-        my  name        is  al
-        PRP NN|UNKNOWN  VBZ NN|UNKNOWN
-    */
+    // my  name        is  al
+    // PRP NN|UNKNOWN  VBZ NN|UNKNOWN
     
     if (input.match(/PRP(.*)VBZ/i)) {
       // PRP(.*)VBZ (ex: my ** ** is **)
@@ -216,6 +216,11 @@ function tokenize(input) {
   return items;
 }
 
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+
 function main() {
   input = document.getElementById("input").value;
   result = parse(input);
@@ -226,17 +231,27 @@ function main() {
   console.log(userResponses);
   console.log(userResponses[0][0].split("/")[1]);
 
+  // teacher time
+  var botResponse = "";
+  botResponse = botLearnedPatterns[randomIntFromInterval(0,botLearnedPatterns.length)];
+  if (!botResponse) botResponse = input;
+  
+  /*
   // bot response logic
   var botResponse = botResponseLogic(result);
   output(botResponse.replace(/_/g, ""));
-
-  // add to running log
+  */
   
+  // add to running log
   logger(input);
-  logger(botResponse.replace(/_/g, ""));
+  logger(botResponse);
+  //logger(botResponse.replace(/_/g, ""));
   console.log(askedQuestions);
   
   document.getElementById("input").value = "";    // clear input textbox
   console.log("learned:");
   console.log(learned);   // display what we've learned
+  
+  console.log("learned responses:");
+  console.log(botLearnedPatterns);
 }
